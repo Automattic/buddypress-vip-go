@@ -2,7 +2,7 @@
 
 **Contributors:** humanmade, djpaul, garyj  
 **Tags:** BuddyPress, BuddyBoss, WordPress VIP  
-**Requires at least:** 6.4  
+**Requires at least:** 6.6  
 **Tested up to:** 6.8  
 **Stable tag:** 1.0.5  
 **License:** GPLv2 or later  
