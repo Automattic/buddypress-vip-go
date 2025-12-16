@@ -5,6 +5,22 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.6] - 2025-12-16
+
+### Fixed
+
+- Improve avatar upload handling for VIP filesystem by @GaryJones in <https://github.com/Automattic/BuddyPress-VIP-Go/pull/34>
+- Support BuddyPress 6.0+ avatar filter rename by @GaryJones in <https://github.com/Automattic/BuddyPress-VIP-Go/pull/31>
+- Disable avatar history feature (BP 10.0+) to prevent filesystem errors by @GaryJones in <https://github.com/Automattic/BuddyPress-VIP-Go/pull/33>
+- Simplify loading conditions by removing unnecessary AJAX check by @GaryJones in <https://github.com/Automattic/BuddyPress-VIP-Go/pull/23>
+
+### Changed
+
+- Add note about plugin activation order in README by @GaryJones in <https://github.com/Automattic/BuddyPress-VIP-Go/pull/32>
+- Increase minimum supported WordPress version to 6.6 by @GaryJones in <https://github.com/Automattic/BuddyPress-VIP-Go/pull/25>
+- Add wp-env configuration for local development by @GaryJones in <https://github.com/Automattic/BuddyPress-VIP-Go/pull/24>
+- Add GitHub Actions workflows and PHPUnit test infrastructure by @GaryJones in <https://github.com/Automattic/BuddyPress-VIP-Go/pull/27>
+
 ## [1.0.5] - 2025-07-07
 
 ### Fixed
@@ -56,6 +72,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Initial release of BuddyPress for VIP Go
 
+[1.0.6]: https://github.com/automattic/buddypress-vip-go/compare/1.0.5...1.0.6
 [1.0.5]: https://github.com/automattic/buddypress-vip-go/compare/1.0.4...1.0.5
 [1.0.4]: https://github.com/automattic/buddypress-vip-go/compare/1.0.3...1.0.4
 [1.0.3]: https://github.com/automattic/buddypress-vip-go/compare/1.0.2...1.0.3
