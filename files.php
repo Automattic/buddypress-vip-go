@@ -371,7 +371,9 @@ function vipbp_handle_avatar_upload( $_, $file, $upload_dir_filter ) {
 
 
 	// Set placeholder meta for image crop.
-	if ( 'xprofile_avatar_upload_dir' === $upload_dir_filter ) {
+	// Check for both old (pre-BP 6.0) and new filter names for backwards compatibility.
+	$user_avatar_filters = array( 'xprofile_avatar_upload_dir', 'bp_members_avatar_upload_dir' );
+	if ( in_array( $upload_dir_filter, $user_avatar_filters, true ) ) {
 		update_user_meta(
 			(int) $object_id,
 			"vipbp-{$avatar_type}",
@@ -474,7 +476,9 @@ function vipbp_handle_avatar_capture( $_, $data, $item_id ) {
 	);
 
 	// Upload the avatar.
-	bp_core_avatar_handle_upload( $file, 'xprofile_avatar_upload_dir' );
+	// Use new filter name (BP 6.0+) if available, otherwise fall back to old name.
+	$avatar_upload_filter = function_exists( 'bp_members_avatar_upload_dir' ) ? 'bp_members_avatar_upload_dir' : 'xprofile_avatar_upload_dir';
+	bp_core_avatar_handle_upload( $file, $avatar_upload_filter );
 
 	// And crop it.
 	bp_core_avatar_handle_crop(
