@@ -11,6 +11,9 @@ defined( 'ABSPATH' ) || exit;
 add_action(
 	'bp_init',
 	function () {
+		// Disable avatar history feature (BP 10.0+) as it requires filesystem directory listing.
+		add_filter( 'bp_disable_avatar_history', '__return_true' );
+
 		// Tweaks for fetching avatars and cover images -- bp_core_fetch_avatar() and bp_attachments_get_attachment().
 		add_filter( 'bp_core_avatar_folder_dir', '__return_empty_string' );
 		add_filter( 'bp_core_fetch_avatar_no_grav', '__return_true' );
