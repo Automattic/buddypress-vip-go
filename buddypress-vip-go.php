@@ -25,12 +25,10 @@ defined( 'ABSPATH' ) || exit;
 add_action(
 	'bp_loaded',
 	function () {
-		$is_ajax       = defined( 'DOING_AJAX' ) && DOING_AJAX;
 		$vip_available = class_exists( 'A8C_Files' ) && defined( 'FILES_CLIENT_SITE_ID' ) && defined( 'FILES_ACCESS_TOKEN' );
 
-		// Load files.php if it's an AJAX request OR if VIP environment is available.
-		if ( $is_ajax || $vip_available ) {
+		if ( $vip_available ) {
 			require_once __DIR__ . '/files.php';
 		}
-	} 
+	}
 );
