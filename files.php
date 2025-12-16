@@ -11,11 +11,14 @@ defined( 'ABSPATH' ) || exit;
 // Disable avatar history feature (BP 10.0+) as it requires filesystem directory listing.
 add_filter( 'bp_disable_avatar_history', '__return_true' );
 
+// Prevent BuddyPress from scanning the filesystem for avatar files.
+// This must be added early (before bp_init priority 8 where bp_setup_title runs).
+add_filter( 'bp_core_avatar_folder_dir', '__return_empty_string' );
+
 add_action(
 	'bp_init',
 	function () {
 		// Tweaks for fetching avatars and cover images -- bp_core_fetch_avatar() and bp_attachments_get_attachment().
-		add_filter( 'bp_core_avatar_folder_dir', '__return_empty_string' );
 		add_filter( 'bp_core_fetch_avatar_no_grav', '__return_true' );
 		add_filter( 'bp_core_default_avatar_user', 'vipbp_filter_user_avatar_urls', 10, 2 );
 		add_filter( 'bp_core_default_avatar_group', 'vipbp_filter_group_avatar_urls', 10, 2 );
