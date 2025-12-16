@@ -2,9 +2,9 @@
 
 **Contributors:** humanmade, djpaul, garyj  
 **Tags:** BuddyPress, BuddyBoss, WordPress VIP  
-**Requires at least:** 4.4.2  
+**Requires at least:** 6.6  
 **Tested up to:** 6.8  
-**Stable tag:** 1.0.5  
+**Stable tag:** 1.0.6  
 **License:** GPLv2 or later  
 **License URI:** https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -48,8 +48,9 @@ Deleting files is handled by deleting the meta data, and then calling `wp_delete
 ## Installation
 
 1. Upload the `buddypress-vip-go` folder to the `/wp-content/plugins/` directory
-2. Activate the plugin through the 'Plugins' menu in WordPress
-3. No additional configuration is required
+2. **Activate this plugin before activating BuddyPress** to avoid fatal errors during BuddyPress initialisation
+3. Activate BuddyPress
+4. No additional configuration is required
 
 ## Changelog
 

@@ -8,6 +8,9 @@
 // Exit if accessed directly.
 defined( 'ABSPATH' ) || exit;
 
+// Disable avatar history feature (BP 10.0+) as it requires filesystem directory listing.
+add_filter( 'bp_disable_avatar_history', '__return_true' );
+
 add_action(
 	'bp_init',
 	function () {
@@ -137,7 +140,7 @@ function vipbp_filter_avatar_urls( $params, $meta ) {
 	 * Return a Gravatar.
 	 */
 
-	if ( ! $meta ) {
+	if ( ! $meta || empty( $meta['url'] ) ) {
 
 		// Gravatar type.
 		if ( empty( $bp->grav_default->{$params['object']} ) ) {
@@ -197,7 +200,7 @@ function vipbp_filter_avatar_urls( $params, $meta ) {
 
 	$avatar_args = array(
 		// Maybe clamp image width (e.g. if it was uploaded on a narrow display).
-		'w'      => $meta['ui_width'],
+		'w'      => $meta['ui_width'] ?? 0,
 
 		// Crop avatar.
 		'crop'   => sprintf(
@@ -334,13 +337,15 @@ function vipbp_handle_avatar_upload( $_, $file, $upload_dir_filter ) {
 
 
 	// Handle file upload.
+	// Use wp_handle_sideload() instead of wp_handle_upload() for consistency with
+	// webcam captures, and because BuddyPress has already validated the upload.
 	$uploaded_file = $file['file'];
-	$result        = wp_handle_upload(
+	$result        = wp_handle_sideload(
 		$uploaded_file,
 		array(
-			'action'    => 'wp_handle_upload', // Matches Core's action for uploads, to ensure VIP Go fileservice filters are applied.
+			'action'    => 'wp_handle_sideload',
 			'test_form' => false,
-		) 
+		)
 	);
 
 	if ( ! empty( $result['error'] ) ) {
@@ -371,7 +376,9 @@ function vipbp_handle_avatar_upload( $_, $file, $upload_dir_filter ) {
 
 
 	// Set placeholder meta for image crop.
-	if ( 'xprofile_avatar_upload_dir' === $upload_dir_filter ) {
+	// Check for both old (pre-BP 6.0) and new filter names for backwards compatibility.
+	$user_avatar_filters = array( 'xprofile_avatar_upload_dir', 'bp_members_avatar_upload_dir' );
+	if ( in_array( $upload_dir_filter, $user_avatar_filters, true ) ) {
 		update_user_meta(
 			(int) $object_id,
 			"vipbp-{$avatar_type}",
@@ -402,6 +409,9 @@ function vipbp_handle_avatar_upload( $_, $file, $upload_dir_filter ) {
 
 
 	// Re-implement globals and checks that BuddyPress normally does.
+	if ( ! isset( $bp->avatar_admin ) ) {
+		$bp->avatar_admin = new stdClass();
+	}
 	$bp->avatar_admin->image       = new stdClass();
 	$bp->avatar_admin->image->dir  = str_replace( bp_core_avatar_url(), '', $result['url'] );
 	$bp->avatar_admin->image->file = $result['url'];
@@ -437,6 +447,11 @@ function vipbp_handle_avatar_upload( $_, $file, $upload_dir_filter ) {
  * @return false Shortcircuits bp_avatar_handle_capture().
  */
 function vipbp_handle_avatar_capture( $_, $data, $item_id ) {
+	// Bail if no data provided (can happen if base64 decode failed upstream).
+	if ( empty( $data ) ) {
+		return false;
+	}
+
 	$switched = false;
 
 	if ( ! bp_is_root_blog() ) {
@@ -444,45 +459,56 @@ function vipbp_handle_avatar_capture( $_, $data, $item_id ) {
 		$switched = true;
 	}
 
-	if ( ! function_exists( 'wp_tempnam' ) ) {
-		require_once ABSPATH . '/wp-admin/includes/file.php';
+	// Use wp_upload_bits() to write directly to uploads - more memory efficient
+	// than wp_handle_sideload() and works with VIP's filesystem.
+	$filename = 'webcam-' . $item_id . '-' . wp_generate_password( 6, false ) . '.png';
+	$result   = wp_upload_bits( $filename, null, $data );
+
+	// Free memory immediately.
+	unset( $data );
+
+	if ( ! empty( $result['error'] ) ) {
+		/* translators: %s: Error message returned during the upload process. */
+		bp_core_add_message( sprintf( __( 'Upload failed! Error was: %s', 'buddypress-vip-go' ), $result['error'] ), 'error' );
+		if ( $switched ) {
+			restore_current_blog();
+		}
+		return false;
 	}
 
-	// Save bytestream to disk.
-	$tmp_name = wp_tempnam();
-	// phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions.file_ops_file_put_contents
-	file_put_contents( $tmp_name, $data );
+	// Get crop dimensions.
+	$bp               = buddypress();
+	$crop_image_width = bp_core_avatar_original_max_width();
 
-	// Figure out the MIME type.
-	$finfo     = finfo_open( FILEINFO_MIME_TYPE );
-	$mime_type = finfo_file( $finfo, $tmp_name );
-	finfo_close( $finfo );
+	if ( isset( $bp->avatar_admin->ui_available_width ) && $bp->avatar_admin->ui_available_width < $crop_image_width ) {
+		$crop_image_width = ( $crop_image_width < bp_core_avatar_full_width() ) ? bp_core_avatar_full_width() : $bp->avatar_admin->ui_available_width;
+	}
 
-	$new_tmp_name = str_replace( '.tmp', '.' . array_search( $mime_type, get_allowed_mime_types(), true ), $tmp_name );
-	// phpcs:ignore WordPressVIPMinimum.Functions.RestrictedFunctions.file_ops_rename
-	rename( $tmp_name, $new_tmp_name );
-	$tmp_name = $new_tmp_name;
+	// Add query argument to ensure image is not upscaled.
+	$result['url'] = add_query_arg( 'w', $crop_image_width, $result['url'] );
 
-	// Fake it as if it were a $_FILES array.
-	$file = array(
-		'file' => array(
-			'name'     => basename( $tmp_name ),
-			'tmp_name' => $tmp_name,
-			'type'     => $mime_type,
-			'size'     => filesize( $tmp_name ),
-		),
-	);
-
-	// Upload the avatar.
-	bp_core_avatar_handle_upload( $file, 'xprofile_avatar_upload_dir' );
-
-	// And crop it.
-	bp_core_avatar_handle_crop(
+	// Save avatar meta.
+	update_user_meta(
+		(int) $item_id,
+		'vipbp-avatars',
 		array(
-			'item_id'       => $item_id,
-			'original_file' => $tmp_name,
-		) 
+			'crop_w'   => bp_core_avatar_full_width(),
+			'crop_h'   => bp_core_avatar_full_height(),
+			'crop_x'   => 0,
+			'crop_y'   => 0,
+			'ui_width' => $crop_image_width,
+			'url'      => $result['url'],
+		)
 	);
+
+	// Set up BuddyPress globals for the cropper UI.
+	if ( ! isset( $bp->avatar_admin ) ) {
+		$bp->avatar_admin = new stdClass();
+	}
+	$bp->avatar_admin->image       = new stdClass();
+	$bp->avatar_admin->image->dir  = str_replace( bp_core_avatar_url(), '', $result['url'] );
+	$bp->avatar_admin->image->file = $result['url'];
+	$bp->avatar_admin->image->url  = $result['url'];
 
 	if ( $switched ) {
 		restore_current_blog();
@@ -621,7 +647,7 @@ function vip_handle_cover_image_upload( $_, $args, $needs_reset, $object_data ) 
  *     @type int         $crop_x        The horizontal starting point of the crop. Default: 0.
  *     @type int         $crop_y        The vertical starting point of the crop. Default: 0.
  * }
- * @return false Shortcircuits bp_core_avatar_handle_crop().
+ * @return false Shortcircuits bp_core_avatar_handle_crop(). Returns false to indicate we handled it.
  */
 function vipbp_handle_avatar_crop( $_, $args ) {
 	$cropping_meta = array(
@@ -640,11 +666,29 @@ function vipbp_handle_avatar_crop( $_, $args ) {
 
 	if ( 'user' === $args['object'] ) {
 		$meta = get_user_meta( (int) $args['item_id'], 'vipbp-' . $args['avatar_dir'], true );
+
+		// Don't update crop values if there's no valid URL in meta (upload may have failed).
+		if ( empty( $meta['url'] ) ) {
+			if ( $switched ) {
+				restore_current_blog();
+			}
+			return false;
+		}
+
 		$meta = wp_parse_args( $cropping_meta, $meta );
 		update_user_meta( (int) $args['item_id'], 'vipbp-' . $args['avatar_dir'], $meta );
 
 	} elseif ( 'group' === $args['object'] ) {
 		$meta = groups_get_groupmeta( (int) $args['item_id'], 'vipbp-' . $args['avatar_dir'], true );
+
+		// Don't update crop values if there's no valid URL in meta (upload may have failed).
+		if ( empty( $meta['url'] ) ) {
+			if ( $switched ) {
+				restore_current_blog();
+			}
+			return false;
+		}
+
 		$meta = wp_parse_args( $cropping_meta, $meta );
 		groups_update_groupmeta( (int) $args['item_id'], 'vipbp-' . $args['avatar_dir'], $meta );
 	}
