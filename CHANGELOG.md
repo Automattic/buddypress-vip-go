@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.8] - 2025-01-12
+
+### Fixed
+
+- Fix default group avatar uploads in BuddyBoss by storing metadata in option instead of group meta when item_id=0 by @GaryJones in <https://github.com/Automattic/BuddyPress-VIP-Go/pull/41>
+- Fall back to default group avatar for groups without specific avatars by @GaryJones in <https://github.com/Automattic/BuddyPress-VIP-Go/pull/41>
+
 ## [1.0.7] - 2025-12-16
 
 ### Fixed
@@ -78,6 +85,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Initial release of BuddyPress for VIP Go
 
+[1.0.8]: https://github.com/automattic/buddypress-vip-go/compare/1.0.7...1.0.8
 [1.0.7]: https://github.com/automattic/buddypress-vip-go/compare/1.0.6...1.0.7
 [1.0.6]: https://github.com/automattic/buddypress-vip-go/compare/1.0.5...1.0.6
 [1.0.5]: https://github.com/automattic/buddypress-vip-go/compare/1.0.4...1.0.5
