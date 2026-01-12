@@ -112,6 +112,12 @@ function vipbp_filter_group_avatar_urls( $_, $params ) {
 	} else {
 		// phpcs:ignore Universal.Operators.DisallowShortTernary.Found
 		$meta = groups_get_groupmeta( $params['item_id'], 'vipbp-group-avatars', true ) ?: array();
+
+		// If no specific avatar for this group, fall back to default group avatar.
+		if ( empty( $meta ) || empty( $meta['url'] ) ) {
+			// phpcs:ignore Universal.Operators.DisallowShortTernary.Found
+			$meta = bp_get_option( 'vipbp-default-group-avatar', array() ) ?: array();
+		}
 	}
 
 	$retval = vipbp_filter_avatar_urls( $params, $meta );
