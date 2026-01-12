@@ -105,11 +105,16 @@ function vipbp_filter_group_avatar_urls( $_, $params ) {
 		$switched = true;
 	}
 
-	$retval = vipbp_filter_avatar_urls(
-		$params,
+	// Handle default group avatar (item_id=0) - fetch from option instead of group meta.
+	if ( 0 === (int) $params['item_id'] ) {
 		// phpcs:ignore Universal.Operators.DisallowShortTernary.Found
-		groups_get_groupmeta( $params['item_id'], 'vipbp-group-avatars', true ) ?: array()
-	);
+		$meta = bp_get_option( 'vipbp-default-group-avatar', array() ) ?: array();
+	} else {
+		// phpcs:ignore Universal.Operators.DisallowShortTernary.Found
+		$meta = groups_get_groupmeta( $params['item_id'], 'vipbp-group-avatars', true ) ?: array();
+	}
+
+	$retval = vipbp_filter_avatar_urls( $params, $meta );
 
 	if ( $switched ) {
 		restore_current_blog();
@@ -396,18 +401,25 @@ function vipbp_handle_avatar_upload( $_, $file, $upload_dir_filter ) {
 		);
 
 	} elseif ( 'groups_avatar_upload_dir' === $upload_dir_filter ) {
-		groups_update_groupmeta(
-			(int) $object_id,
-			"vipbp-{$avatar_type}",
-			array(
-				'crop_w'   => bp_core_avatar_full_width(),
-				'crop_h'   => bp_core_avatar_full_height(),
-				'crop_x'   => 0,
-				'crop_y'   => 0,
-				'ui_width' => $crop_image_width,
-				'url'      => $result['url'],
-			) 
+		$avatar_meta = array(
+			'crop_w'   => bp_core_avatar_full_width(),
+			'crop_h'   => bp_core_avatar_full_height(),
+			'crop_x'   => 0,
+			'crop_y'   => 0,
+			'ui_width' => $crop_image_width,
+			'url'      => $result['url'],
 		);
+
+		// Handle default group avatar (item_id=0) - store in option instead of group meta.
+		if ( 0 === (int) $object_id ) {
+			bp_update_option( 'vipbp-default-group-avatar', $avatar_meta );
+		} else {
+			groups_update_groupmeta(
+				(int) $object_id,
+				"vipbp-{$avatar_type}",
+				$avatar_meta
+			);
+		}
 	}
 
 
@@ -682,7 +694,12 @@ function vipbp_handle_avatar_crop( $_, $args ) {
 		update_user_meta( (int) $args['item_id'], 'vipbp-' . $args['avatar_dir'], $meta );
 
 	} elseif ( 'group' === $args['object'] ) {
-		$meta = groups_get_groupmeta( (int) $args['item_id'], 'vipbp-' . $args['avatar_dir'], true );
+		// Handle default group avatar (item_id=0) - use option instead of group meta.
+		if ( 0 === (int) $args['item_id'] ) {
+			$meta = bp_get_option( 'vipbp-default-group-avatar', array() );
+		} else {
+			$meta = groups_get_groupmeta( (int) $args['item_id'], 'vipbp-' . $args['avatar_dir'], true );
+		}
 
 		// Don't update crop values if there's no valid URL in meta (upload may have failed).
 		if ( empty( $meta['url'] ) ) {
@@ -693,7 +710,13 @@ function vipbp_handle_avatar_crop( $_, $args ) {
 		}
 
 		$meta = wp_parse_args( $cropping_meta, $meta );
-		groups_update_groupmeta( (int) $args['item_id'], 'vipbp-' . $args['avatar_dir'], $meta );
+
+		// Handle default group avatar (item_id=0) - store in option instead of group meta.
+		if ( 0 === (int) $args['item_id'] ) {
+			bp_update_option( 'vipbp-default-group-avatar', $meta );
+		} else {
+			groups_update_groupmeta( (int) $args['item_id'], 'vipbp-' . $args['avatar_dir'], $meta );
+		}
 	}
 
 	if ( $switched ) {
@@ -776,8 +799,14 @@ function vipbp_delete_existing_avatar( $_, $args ) {
 		delete_user_meta( (int) $args['item_id'], 'vipbp-' . $args['avatar_dir'] );
 
 	} elseif ( 'group' === $args['object'] ) {
-		$meta = groups_get_groupmeta( (int) $args['item_id'], 'vipbp-' . $args['avatar_dir'], true );
-		groups_delete_groupmeta( (int) $args['item_id'], 'vipbp-' . $args['avatar_dir'] );
+		// Handle default group avatar (item_id=0) - use option instead of group meta.
+		if ( 0 === (int) $args['item_id'] ) {
+			$meta = bp_get_option( 'vipbp-default-group-avatar', array() );
+			bp_delete_option( 'vipbp-default-group-avatar' );
+		} else {
+			$meta = groups_get_groupmeta( (int) $args['item_id'], 'vipbp-' . $args['avatar_dir'], true );
+			groups_delete_groupmeta( (int) $args['item_id'], 'vipbp-' . $args['avatar_dir'] );
+		}
 	}
 
 	if ( $meta ) {
