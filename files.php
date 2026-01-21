@@ -40,6 +40,7 @@ add_action(
 
 		// Tweaks for uploading videos into groups.
 		add_filter( 'bp_core_pre_remove_temp_directory', 'vipbp_override_remove_temp_directory', 10, 3 );
+		add_filter( 'bfu_temp_dir', 'vipbp_filter_chunked_upload_temp_dir' );
 
 		// Tweaks for flushing the cache after moving a video.
 		add_action( 'bp_video_after_save', 'vipbp_flush_cache_after_video_move', 99 );
@@ -898,4 +899,22 @@ function vipbp_override_remove_temp_directory( $override, $directory, $image_nam
  */
 function vipbp_flush_cache_after_video_move() {
 	bp_core_reset_incrementor( 'bp_media' );
+}
+
+/**
+ * Redirect BuddyBoss chunked video uploads to a local temp directory.
+ *
+ * By default, BuddyBoss uses wp_upload_dir() for chunked uploads, which on VIP
+ * points to the File Hosting Service (FHS). FHS doesn't support file locking
+ * operations (flock) needed for the upload process, causing "Failed to create
+ * lock file" errors.
+ *
+ * This filter redirects chunked uploads to the server's local temp directory
+ * where file locking works correctly. The final assembled file is still moved
+ * to the proper FHS location after upload completes.
+ *
+ * @return string Path to the local temp directory for chunked uploads.
+ */
+function vipbp_filter_chunked_upload_temp_dir() {
+	return get_temp_dir() . 'bb-large-upload';
 }

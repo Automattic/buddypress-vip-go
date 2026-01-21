@@ -2,14 +2,14 @@
 # This file is distributed under the GPL v2 or later.
 msgid ""
 msgstr ""
-"Project-Id-Version: BuddyPress VIP Go 1.0.8\n"
+"Project-Id-Version: BuddyPress VIP Go 1.0.9\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/buddypress-vip-go\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-01-12T20:12:08+00:00\n"
+"POT-Creation-Date: 2026-01-21T14:14:13+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: buddypress-vip-go\n"
@@ -30,20 +30,20 @@ msgid "Human Made, WordPress VIP"
 msgstr ""
 
 #. translators: %s: Error message returned during the upload process.
-#: files.php:367
-#: files.php:493
+#: files.php:368
+#: files.php:494
 #, php-format
 msgid "Upload failed! Error was: %s"
 msgstr ""
 
 #. translators: 1: Avatar width. 2: Avatar height.
-#: files.php:445
+#: files.php:446
 #, php-format
 msgid "You have selected an image that is smaller than recommended. For best results, upload a picture larger than %1$d x %2$d pixels."
 msgstr ""
 
 #. translators: %s: Error message returned during the upload process.
-#: files.php:596
+#: files.php:597
 #, php-format
 msgid "Upload Failed! Error was: %s"
 msgstr ""
