@@ -3,6 +3,7 @@
 # If you develop for CAP using Composer, use `--prefer-source`.
 # https://blog.madewithlove.be/post/gitattributes/
 
+/.claude/         export-ignore
 /.github/         export-ignore
 /tests/           export-ignore
 /.distignore      export-ignore
