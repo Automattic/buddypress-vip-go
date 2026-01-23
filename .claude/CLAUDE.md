@@ -11,7 +11,7 @@ BuddyPress integration and compatibility layer for WordPress VIP Go platform.
 | **Function prefix** | `bp_vip_go_` |
 | **Namespace** | `Automattic\BuddyPressVIPGo` |
 | **Source directory** | Root level (no subdirectory) |
-| **Version** | 1.0.9 |
+| **Version** | 1.0.10 |
 | **Requires PHP** | 8.2+ |
 
 ## Notes

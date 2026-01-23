@@ -44,7 +44,11 @@ add_action(
 
 		// Tweaks for flushing the cache after moving a video.
 		add_action( 'bp_video_after_save', 'vipbp_flush_cache_after_video_move', 99 );
-	} 
+
+		// Tweaks for BuddyBoss default group avatar to prevent opendir() errors.
+		add_filter( 'option_bp-default-custom-group-avatar', 'vipbp_filter_default_group_avatar_option' );
+		add_filter( 'bb_get_default_custom_upload_group_avatar', 'vipbp_filter_bb_default_group_avatar' );
+	}
 );
 
 /**
@@ -917,4 +921,45 @@ function vipbp_flush_cache_after_video_move() {
  */
 function vipbp_filter_chunked_upload_temp_dir() {
 	return get_temp_dir() . 'bb-large-upload';
+}
+
+/**
+ * Prevent BuddyBoss from calling bb_get_default_custom_avatar() which uses opendir().
+ *
+ * BuddyBoss's bb_get_default_custom_upload_group_avatar() calls bb_get_default_custom_avatar()
+ * when the option is not empty and size is not 'full'. That function uses opendir() to scan
+ * the filesystem, which fails on VIP.
+ *
+ * By returning empty for this option when we have a VIP-stored avatar, the condition that
+ * calls bb_get_default_custom_avatar() will be false, preventing the opendir() call.
+ * The actual URL is provided by vipbp_filter_bb_default_group_avatar().
+ *
+ * @param mixed $value The option value.
+ * @return mixed Empty string if we have a VIP avatar, original value otherwise.
+ */
+function vipbp_filter_default_group_avatar_option( $value ) {
+	$meta = bp_get_option( 'vipbp-default-group-avatar', array() );
+	if ( ! empty( $meta['url'] ) ) {
+		return '';
+	}
+	return $value;
+}
+
+/**
+ * Filter BuddyBoss default custom group avatar to use stored URL.
+ *
+ * Since vipbp_filter_default_group_avatar_option() returns empty, this filter
+ * provides the actual avatar URL from our stored option.
+ *
+ * @param string $url The avatar URL (will be empty due to option filter).
+ * @return string The avatar URL from stored option.
+ */
+function vipbp_filter_bb_default_group_avatar( $url ) {
+	$meta = bp_get_option( 'vipbp-default-group-avatar', array() );
+
+	if ( ! empty( $meta['url'] ) ) {
+		return $meta['url'];
+	}
+
+	return $url;
 }

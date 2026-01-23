@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.10] - 2025-01-23
+
+### Fixed
+
+- Filter BuddyBoss default group avatar to prevent opendir error by @GaryJones in <https://github.com/Automattic/BuddyPress-VIP-Go/pull/47>
+
 ## [1.0.9] - 2025-01-21
 
 ### Fixed
@@ -91,6 +97,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Initial release of BuddyPress for VIP Go
 
+[1.0.10]: https://github.com/automattic/buddypress-vip-go/compare/1.0.9...1.0.10
 [1.0.9]: https://github.com/automattic/buddypress-vip-go/compare/1.0.8...1.0.9
 [1.0.8]: https://github.com/automattic/buddypress-vip-go/compare/1.0.7...1.0.8
 [1.0.7]: https://github.com/automattic/buddypress-vip-go/compare/1.0.6...1.0.7
