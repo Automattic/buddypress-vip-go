@@ -10,7 +10,7 @@
  * @wordpress-plugin
  * Plugin Name:       BuddyPress VIP Go
  * Description:       Makes BuddyPress' media work with WordPress VIP's hosting.
- * Version:           1.0.10
+ * Version:           1.0.11
  * Requires at least: 6.6
  * Requires PHP:      8.2
  * Author:            Human Made, WordPress VIP

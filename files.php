@@ -15,6 +15,11 @@ add_filter( 'bp_disable_avatar_history', '__return_true' );
 // This must be added early (before bp_init priority 8 where bp_setup_title runs).
 add_filter( 'bp_core_avatar_folder_dir', '__return_empty_string' );
 
+// Prevent BuddyBoss from calling bb_get_default_custom_avatar() which uses opendir().
+// This must be added early (before bp_init priority 8 where bp_setup_title runs).
+add_filter( 'option_bp-default-custom-group-avatar', 'vipbp_filter_default_group_avatar_option' );
+add_filter( 'bb_get_default_custom_upload_group_avatar', 'vipbp_filter_bb_default_group_avatar' );
+
 add_action(
 	'bp_init',
 	function () {
@@ -44,10 +49,6 @@ add_action(
 
 		// Tweaks for flushing the cache after moving a video.
 		add_action( 'bp_video_after_save', 'vipbp_flush_cache_after_video_move', 99 );
-
-		// Tweaks for BuddyBoss default group avatar to prevent opendir() errors.
-		add_filter( 'option_bp-default-custom-group-avatar', 'vipbp_filter_default_group_avatar_option' );
-		add_filter( 'bb_get_default_custom_upload_group_avatar', 'vipbp_filter_bb_default_group_avatar' );
 	}
 );
 
