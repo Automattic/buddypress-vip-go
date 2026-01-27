@@ -179,7 +179,7 @@ function vipbp_filter_avatar_urls( $params, $meta ) {
 		}
 
 		$params['email'] = apply_filters( 'bp_core_gravatar_email', $params['email'], $params['item_id'], $params['object'] );
-		$gravatar        = apply_filters( 'bp_gravatar_url', '//www.gravatar.com/avatar/' );
+		$gravatar        = apply_filters( 'bp_gravatar_url', 'https://www.gravatar.com/avatar/' );
 		$gravatar       .= md5( strtolower( $params['email'] ) );
 
 		$gravatar_args = array(
