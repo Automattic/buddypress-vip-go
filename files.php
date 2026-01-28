@@ -20,6 +20,10 @@ add_filter( 'bp_core_avatar_folder_dir', '__return_empty_string' );
 add_filter( 'option_bp-default-custom-group-avatar', 'vipbp_filter_default_group_avatar_option' );
 add_filter( 'bb_get_default_custom_upload_group_avatar', 'vipbp_filter_bb_default_group_avatar' );
 
+// Redirect chunked video uploads to local temp directory.
+// This must be added early because video upload AJAX runs before bp_init.
+add_filter( 'bfu_temp_dir', 'vipbp_filter_chunked_upload_temp_dir' );
+
 add_action(
 	'bp_init',
 	function () {
@@ -45,7 +49,6 @@ add_action(
 
 		// Tweaks for uploading videos into groups.
 		add_filter( 'bp_core_pre_remove_temp_directory', 'vipbp_override_remove_temp_directory', 10, 3 );
-		add_filter( 'bfu_temp_dir', 'vipbp_filter_chunked_upload_temp_dir' );
 
 		// Tweaks for flushing the cache after moving a video.
 		add_action( 'bp_video_after_save', 'vipbp_flush_cache_after_video_move', 99 );
