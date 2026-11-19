@@ -45,6 +45,7 @@ so the plugin loads there but leaves BuddyPress's media handling alone.
 ```bash
 composer lint                # PHP syntax
 composer cs                  # Coding standards
+composer test:unit           # Unit tests (no WordPress needed)
 composer test:integration    # Integration tests (single site, needs wp-env)
 composer test:integration-ms # Integration tests (multisite, needs wp-env)
 ```
@@ -74,7 +75,7 @@ All user-facing strings use the `buddypress-vip-go` text domain.
 
 ## Tests
 
-Integration tests live in `tests/Integration/` and run inside wp-env. `tests/Unit/` is set up for tests that don't need WordPress, but has none yet.
+Unit tests live in `tests/Unit/` and run without WordPress; there are none yet. Integration tests live in `tests/Integration/` and run inside wp-env.
 
 - New behavior should come with tests.
 - A bug fix should come with a test that fails without the fix.
