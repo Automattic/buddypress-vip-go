@@ -1,0 +1,7 @@
+{
+  "name": "buddypress-vip-go",
+  "private": true,
+  "devDependencies": {
+    "@wordpress/env": "^12.2.0"
+  }
+}

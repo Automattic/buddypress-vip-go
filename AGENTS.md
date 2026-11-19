@@ -75,7 +75,7 @@ See `CONTRIBUTING.md` for setup, checks and the contribution workflow. Key point
 - Do not edit WordPress core files or BuddyPress core files.
 - This plugin depends on BuddyPress — test environments must have BuddyPress installed and active.
 - Run `composer cs` before committing. CI will reject code standard violations.
-- Integration tests require `npx wp-env start` running first.
+- Integration tests require `npx --no wp-env start` running first. Run `npm ci` before it, so `npx` uses the `@wordpress/env` pinned in `package.json`. Always keep `--no`: without an installed `@wordpress/env`, plain `npx wp-env` fetches the unrelated `wp-env` package from npm.
 - `files.php` is large but cohesive. Do not split it without understanding how VIP Go file operations work — the logic is tightly coupled to VIP Go's file system API.
 - Do not assume standard WordPress file system behaviour. VIP Go uses a different file storage backend and this plugin exists specifically to handle those differences.
 - Be cautious with any changes to upload/media handling — incorrect changes could break media uploads on VIP Go sites.
