@@ -10,11 +10,16 @@
 // Get the testsuite name from PHPUnit's configuration.
 $testsuite = getenv( 'PHPUNIT_TESTSUITE' ) ?: '';
 
-// If running via PHPUnit XML config, detect from the input arguments.
+// If running via PHPUnit XML config, detect from the input arguments,
+// as either `--testsuite=Unit` or `--testsuite Unit`.
 if ( empty( $testsuite ) && isset( $_SERVER['argv'] ) ) {
-	foreach ( $_SERVER['argv'] as $arg ) {
+	foreach ( $_SERVER['argv'] as $i => $arg ) {
 		if ( strpos( $arg, '--testsuite=' ) === 0 ) {
 			$testsuite = str_replace( '--testsuite=', '', $arg );
+			break;
+		}
+		if ( '--testsuite' === $arg && isset( $_SERVER['argv'][ $i + 1 ] ) ) {
+			$testsuite = $_SERVER['argv'][ $i + 1 ];
 			break;
 		}
 	}
