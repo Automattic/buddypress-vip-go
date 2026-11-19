@@ -21,7 +21,7 @@
 	</rule>
 
 	<rule ref="PHPCompatibilityWP"/>
-	<config name="testVersion" value="8.1-"/>
+	<config name="testVersion" value="8.2-"/>
 
 	<!-- How to scan -->
 	<arg value="sp"/> <!-- Show sniff and progress -->
