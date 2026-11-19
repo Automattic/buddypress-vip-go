@@ -12,6 +12,7 @@
  * Description:       Makes BuddyPress' media work with WordPress VIP's hosting.
  * Version:           1.0.12
  * Requires at least: 6.6
+ * Tested up to:      7.1
  * Requires PHP:      8.2
  * Author:            Human Made, WordPress VIP
  * Text Domain:       buddypress-vip-go
