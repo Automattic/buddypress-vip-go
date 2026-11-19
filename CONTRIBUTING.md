@@ -23,13 +23,13 @@ This project follows the [Automattic Code of Conduct](https://automattic.com/cod
 
    ```bash
    composer install
-   npm -g install @wordpress/env
+   npm ci
    ```
 
 3. Start the WordPress environment:
 
    ```bash
-   wp-env start
+   npx wp-env start
    ```
 
 4. Visit <http://localhost:8888> and log in with `admin` / `password`.

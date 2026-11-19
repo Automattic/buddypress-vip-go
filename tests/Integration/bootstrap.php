@@ -18,7 +18,7 @@ $_tests_dir = WPIntegration\get_path_to_wp_test_dir();
 
 if ( empty( $_tests_dir ) ) {
 	echo 'ERROR: Could not find WordPress test library directory.' . PHP_EOL;
-	echo 'Make sure wp-env is running: npm run wp-env start' . PHP_EOL;
+	echo 'Make sure wp-env is running: npm ci && npx --no wp-env start' . PHP_EOL;
 	exit( 1 );
 }
 
