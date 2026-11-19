@@ -50,8 +50,8 @@
 		"lint": "@php ./vendor/php-parallel-lint/php-parallel-lint/parallel-lint . -e php --exclude vendor --exclude .git",
 		"lint-ci": "@php ./vendor/php-parallel-lint/php-parallel-lint/parallel-lint . -e php --exclude vendor --exclude .git --checkstyle",
 		"test:unit": "@php ./vendor/bin/phpunit --testsuite Unit",
-		"test:integration": "npx --no wp-env run tests-cli --env-cwd=wp-content/plugins/buddypress-vip-go ./vendor/bin/phpunit --testsuite WP_Tests",
-		"test:integration-ms": "npx --no wp-env run tests-cli --env-cwd=wp-content/plugins/buddypress-vip-go /bin/bash -c 'WP_MULTISITE=1 ./vendor/bin/phpunit --testsuite WP_Tests'"
+		"test:integration": "npx --no wp-env run tests-cli \"--env-cwd=wp-content/plugins/$(basename \"$(pwd)\")\" ./vendor/bin/phpunit --testsuite WP_Tests",
+		"test:integration-ms": "npx --no wp-env run tests-cli \"--env-cwd=wp-content/plugins/$(basename \"$(pwd)\")\" /bin/bash -c 'WP_MULTISITE=1 ./vendor/bin/phpunit --testsuite WP_Tests'"
 	},
 	"scripts-descriptions": {
 		"coverage": "Run tests with code coverage reporting",
