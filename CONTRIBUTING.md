@@ -16,9 +16,7 @@ This project follows the [Automattic Code of Conduct](https://automattic.com/cod
 
 ### Setup
 
-1. Clone the repository into a directory named `buddypress-vip-go`.
-   The integration test scripts expect the plugin at `wp-content/plugins/buddypress-vip-go` inside wp-env,
-   which takes the name from your checkout's directory.
+1. Clone the repository.
 2. Install dependencies:
 
    ```bash
