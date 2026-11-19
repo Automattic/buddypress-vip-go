@@ -51,6 +51,8 @@ composer coverage          # Run tests with HTML coverage report
 
 ## Conventions
 
+See `CONTRIBUTING.md` for setup, checks and the contribution workflow. Key points:
+
 - **Commits**: Every commit must be signed; `develop` and `main` reject unsigned commits. Use a [Conventional Commits](https://www.conventionalcommits.org/) prefix (`fix:`, `feat:`, `test:`, `docs:`, `ci:`, `chore:` and so on) with an imperative subject of about 50 characters, and a body that explains why the change was needed rather than what changed. One concern per commit.
 - **PRs**: Open against `develop`. The title describes the outcome in sentence case, without a conventional commit prefix. The description explains the problem first, then how the PR solves it. PRs land as merge commits, not squashed or rebased, so every commit message reaches `develop` as written.
 - **Testing**: Write integration tests for WordPress-dependent behavior, unit tests for isolated logic. Use `Yoast\WPTestUtils\WPIntegration\TestCase` for integration, `Yoast\WPTestUtils\BrainMonkey\YoastTestCase` for unit.
